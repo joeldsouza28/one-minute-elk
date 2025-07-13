@@ -4,7 +4,6 @@
 
 🕒 Deploy a full ELK stack (Elasticsearch, Logstash, Kibana, Filebeat) on Kubernetes in under 60 seconds. A blazing-fast, secure, and extensible Kubernetes-native logging stack. Automatically ships logs from across your cluster to a centralized, TLS-enabled Elasticsearch backend — with custom parsing and real-time visualization in Kibana.
 
-
 ## 📦 Features
 
 - ✅ 1-command setup via setup_elk_filebeat.sh
@@ -92,6 +91,12 @@ bash logstash/setup_logstash.sh
 ### 🎯 Send logs from another namespace
 
 Ensure pods in other namespaces write logs to `/var/log/containers`. Filebeat automatically discovers them.
+
+## ✍️ Behind the Project
+
+
+Read the full story and technical deep dive on [Medium →](https://medium.com/@joeldsouza28/one-minute-elk-stack-on-kubernetes-full-logging-setup-with-a-single-script-ba92aecb4379)
+Why I built One Minute ELK, the challenges I faced, and how this project can accelerate your Kubernetes logging workflows.
 
 ## 🔐 Security Highlights
 
