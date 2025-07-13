@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch
+  namespace: logging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+      - image: elasticsearch:9.0.2
+        name: elasticsearch
+        env:
+        - name: discovery.type
+          value: "single-node"
+        - name: ES_JAVA_OPTS
+          value: "-Xms512m -Xmx512m"
+        - name: xpack.security.enabled
+          value: "true"
+        - name: xpack.security.http.ssl.enabled
+          value: "true"
+        - name: xpack.security.http.ssl.key
+          value: "/usr/share/elasticsearch/config/certs/elasticsearch.key"
+        - name: xpack.security.http.ssl.certificate
+          value: "/usr/share/elasticsearch/config/certs/elasticsearch.crt"
+        - name: xpack.security.http.ssl.verification_mode
+          value: "certificate"
+        - name: xpack.security.http.ssl.certificate_authorities
+          value: "/usr/share/elasticsearch/config/certs/ca.crt"
+        volumeMounts:
+        - name: elasticsearch-volume
+          mountPath: /var/lib/elasticsearch
+        - name: certs
+          mountPath: /usr/share/elasticsearch/config/certs
+          readOnly: true
+      restartPolicy: Always
+      volumes:
+      - name: certs
+        secret:
+          secretName: elasticsearch-tls
+      - name: elasticsearch-volume
+        persistentVolumeClaim:
+          claimName: elasticsearch-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  namespace: logging
+spec:
+  selector:
+    app: elasticsearch
+  ports:
+    - protocol: TCP
+      port: 9200
+      targetPort: 9200

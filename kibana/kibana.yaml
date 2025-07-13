@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+  namespace: logging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+      - name: kibana
+        image: docker.elastic.co/kibana/kibana:9.0.2
+        ports:
+          - containerPort: 5601
+        env:
+          - name: ELASTICSEARCH_HOSTS
+            value: "https://elasticsearch:9200"
+          - name: ELASTICSEARCH_USERNAME
+            valueFrom: 
+              secretKeyRef:
+                name: kibana-creds
+                key: elastic_username
+          - name: ELASTICSEARCH_PASSWORD
+            valueFrom: 
+              secretKeyRef:
+                name: kibana-creds
+                key: elastic_password  # replace with actual password
+          - name: SERVER_NAME
+            value: "kibana"
+          - name: SERVER_HOST
+            value: "0.0.0.0"
+          - name: SERVER_SSL_ENABLED
+            value: "false"  # Kibana doesn't need SSL unless you want HTTPS on Kibana too
+          - name: ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
+            value: "/usr/share/kibana/config/certs/ca.crt"
+        volumeMounts:
+          - name: ca-cert
+            mountPath: /usr/share/kibana/config/certs
+            readOnly: true
+      volumes:
+        - name: ca-cert
+          secret:
+            secretName: elasticsearch-tls
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana
+  namespace: logging
+spec:
+  selector:
+    app: kibana
+  ports:
+    - protocol: TCP
+      port: 5601
+      targetPort: 5601

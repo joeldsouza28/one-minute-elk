@@ -1,0 +1,29 @@
+filebeat.inputs:
+      - type: container
+        enabled: true
+        paths:
+          - /var/log/containers/*.log
+        multiline.pattern: '^[[:space:]]'
+        multiline.negate: false
+        multiline.match: after
+        processors:
+          - add_kubernetes_metadata:
+              in_cluster: true
+
+
+filebeat.autodiscover:
+  providers:
+    - type: kubernetes
+      hints.enabled: true
+      hints.default_config:
+        type: container
+        paths:
+          - /var/log/containers/*${data.kubernetes.container.id}.log
+
+
+output.logstash:
+  hosts: ["logstash:5044"]
+  ssl.enabled: false
+
+setup.template.enabled: false
+monitoring.enabled: false
