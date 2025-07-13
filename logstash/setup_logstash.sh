@@ -23,3 +23,4 @@ kubectl create configmap logstash-pipeline \
 
 
 kubectl apply -f ./logstash/logstash.yaml
+kubectl rollout restart deployment logstash
