@@ -86,7 +86,7 @@ elk-k8s-setup/
 Edit `pipeline.conf` and re-run:
 
 ```
-bash scripts/setup_logstash.sh
+bash logstash/setup_logstash.sh
 ```
 
 ### 🎯 Send logs from another namespace
