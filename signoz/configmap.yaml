@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otelcontribcol
+  labels:
+    app: otelcontribcol
+data:
+  config.yaml: |
+    extensions:
+      k8s_observer:
+        auth_type: serviceAccount
+        node: ${env:K8S_NODE_NAME}
+        observe_pods: true
+        observe_nodes: true
+        observe_services: true
+        observe_ingresses: true
+    
+    receivers:
+      prometheus/ksm:
+        config:
+          scrape_configs:
+            - job_name: 'kube-state-metrics'
+              static_configs:
+                - targets: ['kube-state-metrics.kube-system.svc.cluster.local:8080']
+      # receiver_creator:
+      #   watch_observers: [k8s_observer]
+      #   receiver_templates:
+      #     otlp-template:
+      #       rule: type == "pod"  # Apply this config to all pods
+      #       config:
+      #         protocols:
+      #           grpc:
+      #             endpoint: 0.0.0.0:4317
+      #           http:
+      #             endpoint: 0.0.0.0:4318
+      #   receivers:
+      #     redis:
+      #       rule: type == "port" && pod.name matches "redis"
+      #       config:
+      #         password: '`pod.labels["SECRET"]`'
+      #     kubeletstats:
+      #       rule: type == "k8s.node"
+      #       config:
+      #         auth_type: serviceAccount
+      #         collection_interval: 10s
+      #         endpoint: "`endpoint`:`kubelet_endpoint_port`"
+      #         insecure_skip_verify: true
+      #         extra_metadata_labels:
+      #           - container.id
+      #         metric_groups:
+      #           - container
+      #           - pod
+      #           - node
+    
+    exporters:
+      otlp:
+        endpoint: ingest.in.signoz.cloud:443
+        tls:
+          insecure: false
+        headers:
+          signoz-ingestion-key: uJ6onCHKp2ua2xkDGSJB5C6dzO4j4R4XnqW0
+
+
+    service:
+      extensions: [k8s_observer]
+      pipelines:
+        # traces:
+        #   receivers: [receiver_creator]
+        #   exporters: [otlp]
+
+        # logs:
+        #   receivers: [receiver_creator]
+        #   exporters: [otlp]
+
+        metrics:
+          receivers: [prometheus/ksm]
+          exporters: [otlp]
+
+
+
+
