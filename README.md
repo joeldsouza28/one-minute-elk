@@ -2,7 +2,7 @@
 
 
 
-🕒 Deploy a full ELK stack (Elasticsearch, Logstash, Kibana, Filebeat) on Kubernetes in under 60 seconds. A blazing-fast, secure, and extensible Kubernetes-native logging stack. Automatically ships logs from across your cluster to a centralized, TLS-enabled Elasticsearch backend — with custom parsing and real-time visualization in Kibana.
+🕒 Deploy a full ELK stack (Elasticsearch, Logstash, Kibana, Filebeat) on Kubernetes in under 60 seconds (Subject to cloud provisioning speeds. Usually works for kubernetes running in kind, k3d or minikube). A blazing-fast, secure, and extensible Kubernetes-native logging stack. Automatically ships logs from across your cluster to a centralized, TLS-enabled Elasticsearch backend — with custom parsing and real-time visualization in Kibana.
 
 ## 📦 Features
 
